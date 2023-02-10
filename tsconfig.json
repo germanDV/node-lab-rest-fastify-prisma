@@ -5,7 +5,7 @@
     "module": "commonjs",
     "rootDir": "./src",
     "moduleResolution": "node",
-    "baseUrl": "./src",
+    "resolveJsonModule": true,
     "checkJs": true,
     "outDir": "./dist",
     "removeComments": true,
