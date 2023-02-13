@@ -67,7 +67,7 @@ async function authorRoutes(fastify: FastifyInstance, _options: object) {
         fastify.redis.setex(generateKey(authorId), TTL, JSON.stringify(author))
         return author
       } else {
-        res.status(404).send(`Book ${authorId} not found`)
+        res.status(404).send(`Author ${authorId} not found`)
       }
     },
   })
