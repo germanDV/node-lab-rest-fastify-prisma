@@ -42,6 +42,6 @@ model Book {
   title String /// @zod.trim().min(1).max(256)
   price Float /// @zod.positive()
   createdAt DateTime @default(now())
-  author Author @relation(fields: [authorId], references: [id])
+  author Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId Int
 }

@@ -17,3 +17,7 @@ export async function getBooks(page: number, perPage: number) {
 export async function getBookById(id: number) {
   return prisma.book.findFirst({ where: { id }, include: { author: true } })
 }
+
+export async function deleteBook(id: number) {
+  return prisma.book.delete({ where: { id } })
+}

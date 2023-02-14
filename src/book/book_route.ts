@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify"
-import { getBooks, getBookById, createBook } from "./book_service"
+import { getBooks, getBookById, createBook, deleteBook } from "./book_service"
 import { Schemas, BookInput } from "./book_schema"
 import { setDataSourceHeader, createRedisKeyGenerator, env } from "../utils"
 
@@ -13,8 +13,18 @@ async function bookRoutes(fastify: FastifyInstance, _options: object) {
     schema: {
       description: "Get a list of all books in the library",
       tags: ["book"],
+      querystring: {
+        type: "object",
+        properties: {
+          page: { type: "number" },
+          perPage: { type: "number" },
+        },
+      },
       response: {
-        200: { type: "array", items: { $ref: `${Schemas.BOOK_AUTHOR}#` } },
+        200: {
+          type: "array",
+          items: { $ref: `${Schemas.BOOK_AUTHOR}#` },
+        },
       },
     },
     preHandler: async (req, res) => {
@@ -87,6 +97,24 @@ async function bookRoutes(fastify: FastifyInstance, _options: object) {
       const book = await createBook(req.body)
       res.status(201)
       return book
+    },
+  })
+
+  fastify.route<{ Params: { id: number } }>({
+    method: "DELETE",
+    url: "/:id",
+    schema: {
+      description: "Delete a book by it's ID",
+      tags: ["book"],
+      params: { $ref: `${Schemas.BOOK_ID}#` },
+      response: {
+        200: { $ref: `${Schemas.BOOK}#` },
+      },
+    },
+    handler: async (req) => {
+      const bookId = req.params.id
+      await fastify.redis.del(generateKey(bookId))
+      return deleteBook(bookId)
     },
   })
 }

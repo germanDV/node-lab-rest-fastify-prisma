@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify"
-import { createAuthor, getAuthorById, getAuthors } from "./author_service"
+import { createAuthor, deleteAuthor, getAuthorById, getAuthors } from "./author_service"
 import { Schemas, AuthorInput } from "./author_schema"
 import { setDataSourceHeader, createRedisKeyGenerator, env } from "../utils"
 
@@ -13,6 +13,13 @@ async function authorRoutes(fastify: FastifyInstance, _options: object) {
     schema: {
       description: "Get a list of all authors in the library",
       tags: ["author"],
+      querystring: {
+        type: "object",
+        properties: {
+          page: { type: "number" },
+          perPage: { type: "number" },
+        },
+      },
       response: {
         200: { type: "array", items: { $ref: `${Schemas.AUTHOR_BOOKS}#` } },
       },
@@ -87,6 +94,24 @@ async function authorRoutes(fastify: FastifyInstance, _options: object) {
       const author = await createAuthor(req.body)
       res.status(201)
       return author
+    },
+  })
+
+  fastify.route<{ Params: { id: number } }>({
+    method: "DELETE",
+    url: "/:id",
+    schema: {
+      description: "Delete an author by it's ID (deletes all related books as well)",
+      tags: ["author"],
+      params: { $ref: `${Schemas.AUTHOR_ID}#` },
+      response: {
+        200: { $ref: `${Schemas.AUTHOR}#` },
+      },
+    },
+    handler: async (req) => {
+      const authorId = req.params.id
+      await fastify.redis.del(generateKey(authorId))
+      return deleteAuthor(authorId)
     },
   })
 }
