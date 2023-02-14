@@ -3,25 +3,13 @@ generator client {
 }
 
 generator zod {
-  provider                 = "zod-prisma"
-  output                   = "../src/models"
-
-  relationModel            = true // (default) Create and export both plain and related models.
-  // relationModel         = "default" // Do not export model without relations.
-  // relationModel         = false // Do not generate related model
-
-  modelCase                = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
-  // modelCase             = "camelCase" // Output models using camel case (ex. userModel, postModel)
-
-  modelSuffix              = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
-
-  // useDecimalJs          = false // (default) represent the prisma Decimal type using as a JS number
-  useDecimalJs             = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
-
-  // imports                  = null // (default) will import the referenced file in generated schemas to be used via imports.someExportedVariable
-
-  prismaJsonNullability    = true // (default) uses prisma's scheme for JSON field nullability
-  // prismaJsonNullability = false // allows null assignment to optional JSON fields
+  provider                         = "zod-prisma-types"
+  output                           = "../src/models"
+  createOptionalDefaultValuesTypes = true
+  createInputTypes                 = false
+  createModelTypes                 = true
+  addInputTypeValidation           = true
+  createRelationValuesTypes        = false
 }
 
 datasource db {
@@ -30,18 +18,18 @@ datasource db {
 }
 
 model Author {
-  id Int @id @default(autoincrement())
-  firstName String /// @zod.trim().min(1).max(100)
-  middleName String? /// @zod.trim().min(1).max(100).optional()
-  lastName String /// @zod.trim().min(1).max(100)
-  books Book[]
+  id         Int    @id @default(autoincrement())
+  firstName  String /// @zod.string.min(1).max(100)
+  middleName String @default("") /// @zod.string.min(1).max(100)
+  lastName   String /// @zod.string.min(1).max(100)
+  books      Book[]
 }
 
 model Book {
-  id Int @id @default(autoincrement())
-  title String /// @zod.trim().min(1).max(256)
-  price Float /// @zod.positive()
+  id        Int      @id @default(autoincrement())
+  title     String /// @zod.string.min(1).max(256)
+  price     Float /// @zod.number.positive()
   createdAt DateTime @default(now())
-  author Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId Int
+  author    Author   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  Int
 }

@@ -20,7 +20,7 @@
     "@prisma/client": "4.10.1",
     "fastify": "^4.13.0",
     "zod": "^3.20.6",
-    "zod-prisma": "^0.5.4",
+    "zod-prisma-types": "^2.0.17",
     "zod-to-json-schema": "^3.20.3"
   },
   "devDependencies": {
