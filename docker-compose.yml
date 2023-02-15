@@ -1,6 +1,7 @@
-version: "3.8"
+version: "3.9"
 services:
   app:
+    container_name: node-lab-res-app
     network_mode: host
     build: .
     depends_on:
@@ -10,6 +11,7 @@ services:
       - "3333:3333"
     command: sh -c "yarn prisma:init && yarn start"
   postgres:
+    container_name: node-lab-res-db
     network_mode: host
     image: postgres
     ports:
@@ -17,6 +19,7 @@ services:
     env_file:
       - ./.env
   redis:
+    container_name: node-lab-res-cache
     network_mode: host
     image: redis
     ports:
