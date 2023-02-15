@@ -98,4 +98,7 @@ async function main() {
     process.exit(1)
   }
 }
-main()
+
+if (process.env.NODE_ENV !== "testing") {
+  main()
+}
