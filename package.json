@@ -10,8 +10,8 @@
     "build": "tsc",
     "start": "NODE_ENV=production node ./dist/server.js",
     "test:init": "ts-jest config:init",
-    "test": "NODE_ENV=testing PORT=3334 jest --config=./src/jest.config.js",
-    "test:watch": "NODE_ENV=testing PORT=3334 jest --config=./src/jest.config.js --watch",
+    "test": "NODE_ENV=testing jest --config=./src/jest.config.js",
+    "test:watch": "NODE_ENV=testing jest --config=./src/jest.config.js --watch",
     "prisma:studio": "prisma studio",
     "prisma:init": "prisma generate && prisma migrate deploy"
   },

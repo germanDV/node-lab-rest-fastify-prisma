@@ -12,7 +12,7 @@ import { version } from "../package.json"
 async function registerSwaggerDocs(fastify: FastifyInstance) {
   await fastify.register(fastifySwagger, {
     swagger: {
-      host: `${env("host")}:${env("port")}`,
+      host: `localhost:${env("port")}`,
       schemes: ["http"],
       consumes: ["application/json"],
       produces: ["application/json"],
