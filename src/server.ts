@@ -69,7 +69,10 @@ function registerErrorHandler(fastify: FastifyInstance) {
 }
 
 export async function build(): Promise<FastifyInstance> {
-  const fastify: FastifyInstance = Fastify({ logger: true })
+  const fastify: FastifyInstance = Fastify({
+    logger: env("nodeEnv") !== "testing",
+  })
+
   await fastify.register(cors)
   registerSchemas(fastify)
   await registerSwaggerDocs(fastify)
@@ -90,7 +93,7 @@ export async function build(): Promise<FastifyInstance> {
 
 async function main() {
   try {
-    populateAndValidateConfig()
+    populateAndValidateConfig(process.env)
     const app = await build()
     await app.listen({ host: env("host"), port: env("port") })
   } catch (err) {
@@ -99,6 +102,6 @@ async function main() {
   }
 }
 
-if (process.env.NODE_ENV !== "testing") {
+if (env("nodeEnv") !== "testing") {
   main()
 }

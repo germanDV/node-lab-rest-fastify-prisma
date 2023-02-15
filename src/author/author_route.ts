@@ -3,10 +3,10 @@ import { createAuthor, deleteAuthor, getAuthorById, getAuthors } from "./author_
 import { Schemas, AuthorInput } from "./author_schema"
 import { setDataSourceHeader, createRedisKeyGenerator, env } from "../utils"
 
-const TTL = env("redisTTL")
-const generateKey = createRedisKeyGenerator("AUTHOR")
-
 async function authorRoutes(fastify: FastifyInstance, _options: object) {
+  const TTL = env("redisTTL")
+  const generateKey = createRedisKeyGenerator("AUTHOR")
+
   fastify.route<{ Querystring: { page: number; perPage: number } }>({
     method: "GET",
     url: "/",

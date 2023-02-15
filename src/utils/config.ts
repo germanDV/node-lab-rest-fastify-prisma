@@ -1,6 +1,7 @@
 import { z } from "zod"
 
 const configSchema = z.object({
+  nodeEnv: z.enum(["production", "development", "testing"]),
   host: z.string({
     required_error: "HOST is required",
     invalid_type_error: "HOST must be a string",
@@ -37,20 +38,21 @@ let config: Config
  * Creates a config object with values from environment variables.
  * If there are env vars missing or incorrect, it trows.
  */
-export function populateAndValidateConfig() {
+export function populateAndValidateConfig(source: Record<string, string | undefined>) {
   if (!config) {
-    const host = process.env.HOST
-    const port = process.env.PORT
-    const redisHost = process.env.REDIS_HOST
-    const redisPort = process.env.REDIS_PORT
-    const redisTTL = process.env.REDIS_TTL
-    config = configSchema.parse({ host, port, redisHost, redisPort, redisTTL })
+    const nodeEnv = source.NODE_ENV
+    const host = source.HOST
+    const port = source.PORT
+    const redisHost = source.REDIS_HOST
+    const redisPort = source.REDIS_PORT
+    const redisTTL = source.REDIS_TTL
+    config = configSchema.parse({ nodeEnv, host, port, redisHost, redisPort, redisTTL })
   }
 }
 
 export function env<T extends keyof Config>(key: T): Config[T] {
   if (!config) {
-    populateAndValidateConfig()
+    populateAndValidateConfig(process.env)
   }
   return config[key]
 }

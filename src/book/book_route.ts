@@ -3,10 +3,10 @@ import { getBooks, getBookById, createBook, deleteBook } from "./book_service"
 import { Schemas, BookInput } from "./book_schema"
 import { setDataSourceHeader, createRedisKeyGenerator, env } from "../utils"
 
-const TTL = env("redisTTL")
-const generateKey = createRedisKeyGenerator("BOOK")
-
 async function bookRoutes(fastify: FastifyInstance, _options: object) {
+  const TTL = env("redisTTL")
+  const generateKey = createRedisKeyGenerator("BOOK")
+
   fastify.route<{ Querystring: { page: number; perPage: number } }>({
     method: "GET",
     url: "/",
