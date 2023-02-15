@@ -68,30 +68,34 @@ function registerErrorHandler(fastify: FastifyInstance) {
   })
 }
 
-async function start() {
+export async function build(): Promise<FastifyInstance> {
   const fastify: FastifyInstance = Fastify({ logger: true })
+  await fastify.register(cors)
+  registerSchemas(fastify)
+  await registerSwaggerDocs(fastify)
+  registerErrorHandler(fastify)
+
+  fastify.register(fastifyRedis, {
+    host: env("redisHost"),
+    port: env("redisPort"),
+  })
+
+  fastify
+    .register(healthcheckRoute)
+    .register(bookRoutes, { prefix: "/book" })
+    .register(authorRoutes, { prefix: "/author" })
+
+  return fastify
+}
+
+async function main() {
   try {
-    await fastify.register(cors)
-    registerSchemas(fastify)
-    await registerSwaggerDocs(fastify)
-    registerErrorHandler(fastify)
-
-    fastify.register(fastifyRedis, {
-      host: env("redisHost"),
-      port: env("redisPort"),
-    })
-
-    fastify
-      .register(healthcheckRoute)
-      .register(bookRoutes, { prefix: "/book" })
-      .register(authorRoutes, { prefix: "/author" })
-
-    await fastify.listen({ host: env("host"), port: env("port") })
+    populateAndValidateConfig()
+    const app = await build()
+    await app.listen({ host: env("host"), port: env("port") })
   } catch (err) {
-    fastify.log.error(err)
+    console.log(err)
     process.exit(1)
   }
 }
-
-populateAndValidateConfig()
-start()
+main()
